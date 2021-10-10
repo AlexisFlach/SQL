@@ -30,6 +30,22 @@ Försök att se det som en god sak. Har du multivalued attributes så VET du att
 
 Vi bestämmer själva, eller försöker att se, relationen entities emellan. Det finns tre basic typer av relationer; one-to-one, one-to-many och many-to-many. Vi kollar efter relationerna som instanserna av entities har. En **customer** relateras till de varor han eller hon beställer, och var alltså därför ett one-to-many.
 
+#### Data Integrity
+
+I stort handlar Data Integrity om att ha korrekt data i ens databas.
+
+- Entity Integrity
+
+Uniqueness among your entities.
+
+- Referential Integrity
+
+När vi använder id:t i en table från en annan table så måste koppling tables emellan ständigt vara tillgänglig.
+
+- Domain Integrity
+
+Acceptabla värden för en kolumn.
+
 #### Database Normalization
 
 Database Normalization är processen i att strukturera en databas. Denna process går igenom en serie av **Normal Forms** och syftet är att reducera **data redundency** och samtidigt stärka **data integrity**.
@@ -213,55 +229,6 @@ Boyce-Codd Normal Form
 
 - The relation is in third normal form
 - All determinants are candidate keys
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- 
-
-
-
-
-
-
-
-
-
 
 
 
