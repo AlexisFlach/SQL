@@ -22,7 +22,7 @@ En table är i first normal form om den möter följande kriterier:
 
 En **repeterad grupp** (Repeating Groups) är ett attribut som har fler än ett värde i varje row av en table
 
-![1](/Users/alex/Desktop/SQL/normalization/assets/1.png)
+![1](./assets/1.png)
 
 
 
@@ -35,11 +35,11 @@ Lösningen är simpel. Vi undviker helt enkelt repeterade grupper.
 
 Tillvägagångsättet är att skapa ytterligare en table där vi lagrad de anställdas barn. 
 
-![2](/Users/alex/Desktop/SQL/normalization/assets/2.png)
+![2](./assets/2.png)
 
 
 
-![3](/Users/alex/Desktop/SQL/normalization/assets/3.png)
+![3](./assets/3.png)
 
 
 
@@ -49,7 +49,7 @@ Vi har nu löst problemet med repeated groups, men det betyder inte att vi är f
 
 Låt oss ta ett annat exempel för att enklare kunna visa och förstå problematiken.
 
-![4](/Users/alex/Desktop/SQL/normalization/assets/4.png)
+![4](./assets/4.png)
 
 Det första vi behöver göra är att bestämma **Primary Key**.
 
