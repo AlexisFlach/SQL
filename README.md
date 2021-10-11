@@ -2,6 +2,50 @@
 
 ## Relational Database Design Theory
 
+##### Entities och deras Attributes
+
+I Databas Design brukar man börja med att identifiera **entities**. En entity är något som vi lagrar data för. 
+
+- **User** är en entity
+- **Customer** är en entity 
+- **Concert** är en entity.
+
+En entity har data som beskriver dem; **attributes**. 
+
+När vi representerar entities i en databas är det vanligt att endast lagra dess attributes.
+
+###### Entity Identifiers
+
+Ända anledningen till varför vi vill lagra data som beskriver en entity i en databas är att vi någon gång vill hämta datan. Vi behöver därför ett sätt att särskilja en entity från en annan.
+
+###### Single-Valued Versus Multivalued Attributes
+
+Attributen i vår data model måste vara **single-valued**. varje instance av entity kan bara ha ett värde. Har ett attribut flera värden, som till exempel flera telefonnummer lagrade i samma attribut, kallar vi det för **multivalued attributes**. Eftersom att ett attribut inte får inne ha multivalued attributes så behöver vi då skapa en egen entity åt dessa.
+
+Vad är problemet med multivalued attributes? De kan skapa problem med *meaning* av data i en databas, gör sökningar långsamma och skapar onödiga restriktioner för hur mycket data som kan lagras i vår databas.
+
+Försök att se det som en god sak. Har du multivalued attributes så VET du att du måste skapa en ny entity åt dessa.
+
+###### Basic Data Relationships
+
+Vi bestämmer själva, eller försöker att se, relationen entities emellan. Det finns tre basic typer av relationer; one-to-one, one-to-many och many-to-many. Vi kollar efter relationerna som instanserna av entities har. En **customer** relateras till de varor han eller hon beställer, och var alltså därför ett one-to-many.
+
+#### Data Integrity
+
+I stort handlar Data Integrity om att ha korrekt data i ens databas.
+
+- Entity Integrity
+
+Uniqueness among your entities.
+
+- Referential Integrity
+
+När vi använder id:t i en table från en annan table så måste koppling tables emellan ständigt vara tillgänglig.
+
+- Domain Integrity
+
+Acceptabla värden för en kolumn.
+
 #### Database Normalization
 
 Database Normalization är processen i att strukturera en databas. Denna process går igenom en serie av **Normal Forms** och syftet är att reducera **data redundency** och samtidigt stärka **data integrity**.
