@@ -350,7 +350,7 @@ En **repeterad grupp** (Repeating Groups) är ett attribut som har fler än ett 
 
 
 
-Här ser vi ett tydligt exempel på repeating groups. Courses. Det skapar två stora problem:
+Här ser vi ett tydligt exempel på repeating groups: Courses och grades. Det skapar två stora problem:
 
 1. Vi kan inte veta med 100% säkerhet vilket betyg korrespondar med vilken kurs. Vi skulle kunna utgå ifrån att det är i samma position som courses, men vad säger att den relativa positionen alltid kommer att förbli densamma?
 2. Att söka igenom table:n är väldigt svårt. Skulle vi söka efter betyg för kurser i JavaScript som gavs före 2005 behöver vi utföra komplicerade queries.

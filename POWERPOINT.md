@@ -1,3 +1,5 @@
+#### POWERPOINTS
+
 **1**
 
 ```
@@ -38,7 +40,9 @@ En entity har data som beskriver dem; attributes.
 
 **4**
 
-![5](/Users/alex/Desktop/SQL/assets/5.png)
+**entity.png**
+
+<img src="./assets/entity.png" alt="1" style="zoom:50%;" />
 
 ```
 Här har vi ett exempel på en entity, och dess relaterade attribut.
@@ -86,9 +90,11 @@ Låt oss börja med att gå igenom vilka typer av relationer som finns.
 - Many-to-Many
 ```
 
-
-
 **8**
+
+**1nf.png**
+
+<img src="./assets/1nf.png" alt="1" style="zoom:50%;" />
 
 ```
 Single-Valued VS Multivalued Attributes
@@ -153,24 +159,28 @@ För att undvika problem behöver vi dela upp **teacher** och **course** tables.
 
 **12**
 
+Fokus ligger på adressen till studenten som finns på två olika ställen.
+
 ```
 Update Anomalies
 
 Om vi har information om samma data i två olika tables, och uppdaterar informationen i en table så att datan blir inkonsekvent.
 
-CREATE TABLE customer (
-  customer_id MEDIUMINT NOT NULL AUTO_INCREMENT,
+CREATE TABLE student (
+  id MEDIUMINT NOT NULL AUTO_INCREMENT,
   name VARCHAR(255),
   address VARCHAR(255),
-  PRIMARY KEY (customer_id)
+  PRIMARY KEY (id)
 );
 
-CREATE TABLE orders (
-  order_id MEDIUMINT NOT NULL AUTO_INCREMENT,
-  customer_id MEDIUMINT,
-  shipping_address VARCHAR(255),
-  PRIMARY KEY (order_id),
-  FOREIGN KEY(customer_id) REFERENCES customer(customer_id)
+CREATE TABLE grade (
+  id MEDIUMINT NOT NULL AUTO_INCREMENT,
+  grade CHAR(30),
+  student_id MEDIUMINT,
+  student_address VARCHAR(255),
+  sent_grade BOOL,
+  PRIMARY KEY (id),
+  FOREIGN KEY(student_id) REFERENCES student(id)
 );
 ```
 
@@ -220,14 +230,15 @@ En repeterad grupp (Repeating Groups) är ett attribut som har fler än ett vär
 
 **18**
 
-![1](./assets/1.png)
+**1nf.png**
+
+<img src="./assets/1nf.png" alt="3" style="zoom:50%;" />
 
 ```
-Här ser vi ett tydligt exempel på repeating groups. Både *childs_name* och *childs_birth* kulumnerna har flera värden i sig. Det skapar två stora problem:
+Här ser vi ett tydligt exempel på repeating groups: Courses och grades. Det skapar två stora problem:
 
-1. Vi kan inte veta med 100% säkerhet vilken födelsedag som innehas av ett barn. Vi skulle kunna utgå ifrån att det är i samma position som childs_name, men vad säger att den relativa positionen alltid kommer att förbli densamma?
-
-2. Att söka igenom table:n är väldigt svårt. Skulle vi söka efter anställda som har barn födda före 2005 behöver vi utföra komplicerade queries.
+1. Vi kan inte veta med 100% säkerhet vilket betyg korrespondar med vilken kurs. Vi skulle kunna utgå ifrån att det är i samma position som courses, men vad säger att den relativa positionen alltid kommer att förbli densamma?
+2. Att söka igenom table:n är väldigt svårt. Skulle vi söka efter betyg för kurser i JavaScript som gavs före 2005 behöver vi utföra komplicerade queries.
 ```
 
 **19**
@@ -238,44 +249,11 @@ Lösningen är simpel. Vi undviker helt enkelt repeterade grupper.
 Tillvägagångsättet är att skapa ytterligare en table där vi lagrad de anställdas barn. 
 ```
 
-![2](./assets/2.png)
+<img src="./assets/1nfb.png" alt="3" style="zoom:50%;" />
 
-![3](./assets/3.png)
+
 
 **20**
-
-```
-Vi har nu löst problemet med repeated groups, men det betyder inte att vi är färdiga med vår design, eller att ens first normal forms är fri från problem.
-
-Låt oss ta ett annat exempel för att enklare kunna visa och förstå problematiken.
-```
-
-**21**
-
-```
-Det första vi behöver göra är att bestämma **Primary Key**.
-
-Baserat på vår Table design hittills är ända sättat att hitta en **unique identifier** att använda oss av en **concatenated key**, i detta fall en kombination av **order_num** och **item_num**.
-
-Det betyder att vi blir limiterade i vårt arbete.
-
-- Vi kan inte lägga till data om kunden(customer) förens den har lagt en order, därför att utan en order och en item har vi ingen primary key
-- Vi kan inte lägga till data om item innan den har blivit beställd
-```
-
-**22**
-
-```
-Detta kallas för **insertion anomalies** vilket sker när du förhindras att lägga till data därför att vi saknar en komplett primary key.
-
-Insertion anomalies är väldigt vanliga i 1NF. De kommer till därför att det finns data om fler än en **entity** i samma relation.
-
-Vi kan även få problem med **deletion anomalies**. De kommer till därför att delar av primary key blir till **null**, om vi till exempel raderar en item så kommer vi förlora data från hela beställningen.
-
-Att ha fler än en **entity** i samma table är en dålig sak!
-```
-
-**23**
 
 ```
 Second Normal Form
@@ -379,5 +357,29 @@ item(item_num, title, price, dist_num, warehouse_phone_number)
 
 item_num --> dist_num
 dist_num --> warehouse_phone_number
+```
+
+**31**
+
+```
+Skapa en databas design baserat på vad vi har gått igenom.
+
+Fundera över ett databas-system som du som student ska vara en del av.
+
+Vilken information behöver skolan ha om dig?
+
+- Program
+
+- kurser
+
+- betyg
+
+- adress
+
+osv.
+
+Skapa en table där all information lagras.
+
+Gå därefter igenom samtliga Normal Forms och skapa dig en bra Databas Design!
 ```
 
