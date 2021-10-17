@@ -27,13 +27,13 @@ Vad vi kommer att gå igenom
 ```
 Entities och deras Attributes
 
-I Databas Design brukar man börja med att identifiera **entities**. En entity är något som vi lagrar data för. 
+I Databas Design brukar man börja med att identifiera entities. En entity är något som vi lagrar data för. 
 
-- **User** är en entity
-- **Customer** är en entity 
-- **Concert** är en entity.
+- Student är en entity
+- Course är en entity 
+- Lesson är en entity.
 
-En entity har data som beskriver dem; **attributes**. 
+En entity har data som beskriver dem; attributes. 
 ```
 
 **4**
@@ -42,6 +42,8 @@ En entity har data som beskriver dem; **attributes**.
 
 ```
 Här har vi ett exempel på en entity, och dess relaterade attribut.
+
+student är entity och firstName, lastName och age är dess attribut
 ```
 
 ##### 5. 
@@ -60,6 +62,12 @@ Vilken information behöver skolan ha om dig?
 - ...
 ```
 
+Här kan skapa en bred table med all information antingen på papper eller excel
+
+id firstName lastName age program program_name program_location courses grades etc
+
+Senare när du har gått igenom normal forms kan man ta och arbeta med denna datan och bryta ned det till en god design.
+
 **6**
 
 ```
@@ -76,11 +84,9 @@ Låt oss börja med att gå igenom vilka typer av relationer som finns.
 - One-to-one
 - One-to-Many
 - Many-to-Many
-
-
 ```
 
-Gå bara igenom exempel från min text. Gå bara igenom koncepten.
+
 
 **8**
 
@@ -103,15 +109,15 @@ I stort handlar Data Integrity om att ha korrekt data i ens databas.
 
 - Entity Integrity
 
-Uniqueness among your entities. Vi säger att vi applicerar Entity Integrity när vi exempelvis använder oss av **Primary Key** eller **NOT NULL**.
+Våra entities måste vara unika. Vi säger att vi applicerar Entity Integrity när vi exempelvis använder oss av Primary Key.
 
 - Referential Integrity
 
-Vi säger att vi applicerar Referential Integrity när vi exempelvis använder oss av **Foreign Key**
+Vi säger att vi applicerar Referential Integrity när vi exempelvis använder oss av Foreign Key
 
 - Domain Integrity
 
-Acceptabla värden för en kolumn. Vi säger att vi applicerar Domain Integrity när vi exempelvis använder oss av **check**
+Acceptabla värden för en kolumn. Vi säger att vi applicerar Domain Integrity när vi exempelvis använder oss av check.
 ```
 
 **10**
@@ -119,7 +125,7 @@ Acceptabla värden för en kolumn. Vi säger att vi applicerar Domain Integrity 
 ```
 Database Anomalies
 
-Database Anomalies sker vid dåligt planerad databas-design. En teknik för att undgå database anomalies, och ha en väl planerad databas-design kallas för Normalization. 
+Database Anomalies sker vid dåligt planerad databas-design. En teknik för att undgå database anomalies, och ha en väl planerad databas-design kallas för Normalization som vi snart kommer att komma in på. 
 
 Det finns tre typer av database anomalies:
 ```

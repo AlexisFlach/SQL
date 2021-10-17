@@ -1,5 +1,13 @@
+DROP TABLE IF EXISTS grade;
+DROP TABLE IF EXISTS student_course;
+DROP TABLE IF EXISTS book_rentals;
 DROP TABLE IF EXISTS student;
 DROP TABLE IF EXISTS teacher;
+DROP TABLE IF EXISTS course;
+DROP TABLE IF EXISTS externalTeacher;
+
+
+/* Vad är en enity */
 
 CREATE TABLE student (
   id INT NOT NULL AUTO_INCREMENT,
@@ -11,6 +19,8 @@ CREATE TABLE student (
 
 INSERT INTO student(firstName, lastName, age) VALUES('Elev', 'Elevsson', 29);
 
+/* ONE-TO-ONE */
+
 CREATE TABLE teacher (
   id INT NOT NULL AUTO_INCREMENT,
   firstName VARCHAR(255),
@@ -19,37 +29,38 @@ CREATE TABLE teacher (
   PRIMARY KEY (id)
 );
 
-CREATE TABLE student (
+INSERT INTO teacher(firstName, lastName, admin_username) VALUES('Lärar', 'Lärarsson', 'lärare123');
+INSERT INTO teacher(firstName, lastName, admin_username) VALUES('Lärar2', 'Lärarsson2', 'lärare123');
+SELECT * FROM teacher;
+
+/* ONE-TO-MANY */
+
+CREATE TABLE library (
   id INT NOT NULL AUTO_INCREMENT,
-  firstName VARCHAR(255),
-  lastName VARCHAR(255),
-  age INT,
+  name VARCHAR(255),
+  address VARCHAR(255),
   PRIMARY KEY(id)
 );
 
-CREATE TABLE book_rentals (
-  id INT NOT NULL AUTO_INCREMENT,
-  student_id INT,
+CREATE TABLE book (
+  book_id INT NOT NULL AUTO_INCREMENT,
+  library_id INT,
   title VARCHAR(255),
-  PRIMARY KEY(id),
-  FOREIGN KEY(student_id) REFERENCES student(id)
+  PRIMARY KEY(book_id),
+  FOREIGN KEY(library_id) REFERENCES library(id)
 );
 
-INSERT INTO student(firstName, lastName, age) VALUES('Elev', 'Elevsson', 33);
-INSERT INTO book_rentals(student_id, title) VALUES (1, 'mysql bascis');
-INSERT INTO book_rentals(student_id, title) VALUES (1, 'postgres basics');
+INSERT INTO library(name, address) VALUES('Humanisten', 'Göteborg nånstans');
+INSERT INTO book(library_id, title) VALUES (1, 'mysql bascis');
+INSERT INTO book(library_id, title) VALUES (1, 'postgres basics');
 
-SELECT student.firstName
-FROM student
-LEFT JOIN book_rentals
-ON book_rentals.student_id = student.id;
+SELECT book.title
+FROM book
+JOIN library
+ON library.id = book.library_id;
 
-SELECT book_rentals.title
-FROM book_rentals
-LEFT JOIN student
-ON student.id = book_rentals.student_id;
+/* MANY-TO-MANY */
 
-DROP TABLE IF EXISTS course;
 CREATE TABLE course (
      course_id MEDIUMINT NOT NULL AUTO_INCREMENT,
      subject VARCHAR(255) NOT NULL,
@@ -75,3 +86,179 @@ CREATE TABLE student (
 
 INSERT INTO student_course(student_id, course_id) VALUES(1, 1);
 
+/* Domain Integrity */
+
+CREATE TABLE student(id INT, age INT check(age between 18 and 24));
+
+/* Data Redundancy*/
+
+CREATE TABLE school (
+id MEDIUMINT NOT NULL AUTO_INCREMENT,
+name CHAR(30) NOT NULL,
+school_address VARCHAR(255),
+PRIMARY KEY (id)
+);
+
+CREATE TABLE student (
+id MEDIUMINT NOT NULL AUTO_INCREMENT,
+name CHAR(30) NOT NULL,
+school_id MEDIUMINT,
+school_address VARCHAR(255),
+FOREIGN KEY(school_id) REFERENCES school(id),
+PRIMARY KEY (id)
+);
+
+INSERT INTO school(
+name, school_address
+)
+VALUES('kodamera', 'gbgnånstans'
+);
+
+INSERT INTO student(
+  name, school_id, school_address
+)
+VALUES('Elevsson', 1, 'vettefan'
+);
+
+SELECT stud.school_address, school.school_address
+FROM student as stud
+JOIN school
+ON school.id = stud.school_id;
+
+/* Insert Anomaly*/
+
+CREATE TABLE teacher (
+     id MEDIUMINT NOT NULL AUTO_INCREMENT,
+     name CHAR(30) NOT NULL,
+     course VARCHAR(50) NOT NULL,
+     PRIMARY KEY (id)
+);
+
+INSERT INTO teacher(name) VALUES('Teachy-Teach');
+
+CREATE TABLE teacher (
+     teacher_id MEDIUMINT NOT NULL AUTO_INCREMENT,
+     name CHAR(30) NOT NULL,
+     course_id MEDIUMINT,
+     PRIMARY KEY (teacher_id),
+     FOREIGN KEY(course_id) REFERENCES course(course_id)
+);
+
+CREATE TABLE course (
+     course_id MEDIUMINT NOT NULL AUTO_INCREMENT,
+     name CHAR(30) NOT NULL,
+     PRIMARY KEY (course_id)
+);
+
+INSERT INTO course(name) VALUES('history');
+INSERT INTO teacher(name, course_id) VALUES('Alex', 1);
+
+SELECT course.name
+FROM course
+LEFT JOIN teacher
+ON course.course_id = teacher.course_id;
+
+CREATE TABLE externalTeacher (
+     id MEDIUMINT NOT NULL AUTO_INCREMENT,
+     name CHAR(30) NOT NULL,
+     company VARCHAR(255),
+     PRIMARY KEY (id),
+);
+
+INSERT INTO externalTeacher(
+name, company
+VALUES('alex', 'felstavat company name')
+);
+
+/* Update Anomaly */
+
+CREATE TABLE student (
+  id MEDIUMINT NOT NULL AUTO_INCREMENT,
+  name VARCHAR(255),
+  address VARCHAR(255),
+  PRIMARY KEY (id)
+);
+
+CREATE TABLE grade (
+  id MEDIUMINT NOT NULL AUTO_INCREMENT,
+  grade CHAR(30),
+  course_id INT,
+  student_id MEDIUMINT,
+  student_address VARCHAR(255),
+  sent_grade BOOL,
+  PRIMARY KEY (id),
+  FOREIGN KEY(student_id) REFERENCES student(id)
+);
+
+
+/* Delete Anomaly */
+
+CREATE TABLE student (
+  id MEDIUMINT NOT NULL AUTO_INCREMENT,
+  name VARCHAR(255),
+  PRIMARY KEY (id)
+);
+
+CREATE TABLE grade (
+  id MEDIUMINT NOT NULL AUTO_INCREMENT,
+  grade CHAR(30),
+  course_id MEDIUMINT,
+  student_id MEDIUMINT,
+  PRIMARY KEY (id),
+  FOREIGN KEY(student_id) REFERENCES student(id),
+  FOREIGN KEY(course_id) REFERENCES course(id)
+);
+
+CREATE TABLE course (
+ id MEDIUMINT NOT NULL AUTO_INCREMENT,
+ subject VARCHAR(255),
+ PRIMARY KEY(id)
+);
+
+INSERT INTO student(name) VALUES('Elevsson');
+
+INSERT INTO course(subject) VALUES('SQL');
+
+INSERT INTO grade(grade, course_id, student_id) VALUES('VG', 1, 1);
+
+DELETE FROM grade WHERE grade = 'VG';
+
+/* FIRST NORMAL FORMS */
+
+CREATE TABLE student (
+  id MEDIUMINT NOT NULL AUTO_INCREMENT,
+  name VARCHAR(255),
+  courses VARCHAR(255),
+  grades VARCHAR(255),
+  PRIMARY KEY (id)
+);
+
+INSERT INTO student(
+  name, courses, grades
+) VALUES('Elevsson', '"SQL", "JavaScript"', '"G", "VG"');
+
+
+
+CREATE TABLE student (
+  id MEDIUMINT NOT NULL AUTO_INCREMENT,
+  name VARCHAR(255),
+  PRIMARY KEY (id)
+);
+
+CREATE TABLE course_grade (
+  course_name VARCHAR(255),
+  grade VARCHAR(255),
+  student_id MEDIUMINT,
+  FOREIGN KEY(student_id) REFERENCES student(id)
+);
+
+INSERT INTO student(
+  name
+) VALUES('Elevsson');
+
+INSERT INTO course_grade (
+course_name, grade, student_id
+)
+VALUES (
+  'JavaScript', 'VG', 1
+  );

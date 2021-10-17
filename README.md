@@ -11,7 +11,7 @@ I Databas Design brukar man börja med att identifiera **entities**. En entity �
 
 En entity har data som beskriver dem; **attributes**. 
 
-![1](./assets/5.png)
+<img src="./assets/entity.png" alt="1" style="zoom:50%;" />
 
 ###### Basic Data Relationships
 
@@ -31,57 +31,61 @@ CREATE TABLE teacher (
 );
 ```
 
+<img src="./assets/one-to-one.png" alt="one-to-one" style="zoom:50%;" />
+
+
+
 Bara genom att använda oss av **Unique** har vi skapat oss en one-to-one relation.
 
 Lärarern kan endast ha ett admin_username, och det måste vara unikt.
 
 ###### One-to-Many
 
-```
-DROP TABLE IF EXISTS student;
-```
+Vilken table är egentligen "One" och vilken är "Many"?
+
+Alltså; vilken är parent och vilken är child?
+
+En student kan endast gå på en skola, men en skola kan ha flera studenter.
+
+Säg att skolan har ett bibliotek, då kan biblioteket ha flera böcker, men en bok kan ju endast finnas på ett bibliotek.
 
 ```
-CREATE TABLE student (
+CREATE TABLE library (
   id INT NOT NULL AUTO_INCREMENT,
-  firstName VARCHAR(255),
-  lastName VARCHAR(255),
-  age INT,
+  name VARCHAR(255),
+  address VARCHAR(255),
   PRIMARY KEY(id)
 );
 ```
 
 ```
-CREATE TABLE book_rentals (
-  id INT NOT NULL AUTO_INCREMENT,
-  student_id INT,
+CREATE TABLE book (
+  book_id INT NOT NULL AUTO_INCREMENT,
+  library_id INT,
   title VARCHAR(255),
-  PRIMARY KEY(id),
-  FOREIGN KEY(student_id) REFERENCES student(id)
+  PRIMARY KEY(book_id),
+  FOREIGN KEY(library_id) REFERENCES library(id)
 );
 ```
 
 ```
-INSERT INTO student(firstName, lastName, age) VALUES('Elev', 'Elevsson', 33);
-INSERT INTO book_rentals(student_id, title) VALUES (1, 'mysql bascis');
-INSERT INTO book_rentals(student_id, title) VALUES (1, 'postgres basics');
+INSERT INTO library(name, address) VALUES('Humanisten', 'Göteborg nånstans');
+INSERT INTO book(library_id, title) VALUES (1, 'mysql bascis');
+INSERT INTO book(library_id, title) VALUES (1, 'postgres basics');
 ```
 
 ```
-SELECT student.firstName
-FROM student
-LEFT JOIN book_rentals
-ON book_rentals.student_id = student.id;
-```
-
-```
-SELECT book_rentals.title
-FROM book_rentals
-LEFT JOIN student
-ON student.id = book_rentals.student_id;
+SELECT book.title
+FROM book
+JOIN library
+ON library.id = book.library_id;
 ```
 
 ###### Many-To-Many
+
+Inga limitioner på hur många relationer som kan finnas.
+
+En student kan gå flera kurser, och en kurs kan ha flera studenter.
 
 ```
 CREATE TABLE course (
@@ -142,10 +146,37 @@ Acceptabla värden för en kolumn. Vi säger att vi applicerar Domain Integrity 
 
 ```
 CREATE TABLE student(id INT, age INT check(age between 18 and 24));
-
 ```
 
-#### Database Anomalies
+#### Data Redundancy
+
+ När samma data är finns på olika ställen.
+
+```
+CREATE TABLE school (
+id MEDIUMINT NOT NULL AUTO_INCREMENT,
+name CHAR(30) NOT NULL,
+school_address VARCHAR(255),
+PRIMARY KEY (id)
+);
+```
+
+```
+CREATE TABLE student (
+id MEDIUMINT NOT NULL AUTO_INCREMENT,
+name CHAR(30) NOT NULL,
+school_id MEDIUMINT,
+school_address VARCHAR(255),
+FOREIGN KEY(school_id) REFERENCES school(id),
+PRIMARY KEY (id)
+);
+```
+
+Här finns data av skolan address på två olika ställen.
+
+<img src="./assets/data_redundancy.png" alt="data_redundancy" style="zoom:50%;" />
+
+#### Database Anomalies 
 
 **Database Anomalies** sker vid dåligt planerad databas-design. En teknik för att undgå database anomalies, och ha en väl planerad databas-design kallas för **Normalization**. 
 
@@ -192,13 +223,32 @@ CREATE TABLE course (
 
 ```
 INSERT INTO course(name) VALUES('history');
-
 INSERT INTO teacher(name, course_id) VALUES('Alex', 1);
+```
 
+```
 SELECT course.name
 FROM course
 LEFT JOIN teacher
 ON course.course_id = teacher.course_id;
+```
+
+Ett annat exempel är om vi tar in extern personal
+
+```
+CREATE TABLE externalTeacher (
+     id MEDIUMINT NOT NULL AUTO_INCREMENT,
+     name CHAR(30) NOT NULL,
+     company VARCHAR(255),
+     PRIMARY KEY (id),
+);
+```
+
+```
+INSERT INTO externalTeacher(
+name, company
+VALUES('alex', 'felstavat company name')
+);
 ```
 
 ###### Update Anomaly
@@ -206,21 +256,23 @@ ON course.course_id = teacher.course_id;
 Om vi har information om samma data i två olika tables, och uppdaterar informationen i en table så att datan blir inkonsekvent.
 
 ```
-CREATE TABLE customer (
-  customer_id MEDIUMINT NOT NULL AUTO_INCREMENT,
+CREATE TABLE student (
+  id MEDIUMINT NOT NULL AUTO_INCREMENT,
   name VARCHAR(255),
   address VARCHAR(255),
-  PRIMARY KEY (customer_id)
+  PRIMARY KEY (id)
 );
 ```
 
 ```
-CREATE TABLE orders (
-  order_id MEDIUMINT NOT NULL AUTO_INCREMENT,
-  customer_id MEDIUMINT,
-  shipping_address VARCHAR(255),
-  PRIMARY KEY (order_id),
-  FOREIGN KEY(customer_id) REFERENCES customer(customer_id)
+CREATE TABLE grade (
+  id MEDIUMINT NOT NULL AUTO_INCREMENT,
+  grade CHAR(30),
+  student_id MEDIUMINT,
+  student_address VARCHAR(255),
+  sent_grade BOOL,
+  PRIMARY KEY (id),
+  FOREIGN KEY(student_id) REFERENCES student(id)
 );
 ```
 
@@ -228,7 +280,47 @@ CREATE TABLE orders (
 
 När data raderas på grund av radering av någon annan data. 
 
- Deletion Anomaly: Deletion anomaly occurs where deletion some data is deleted because of deletion of some other data. For example if Section B is to be deleted then un-necessarily Sonam’s detail has to be deleted. So normalization is generally done before deleting any record from a flat database.
+```
+CREATE TABLE student (
+  id MEDIUMINT NOT NULL AUTO_INCREMENT,
+  name VARCHAR(255),
+  PRIMARY KEY (id)
+);
+```
+
+```
+CREATE TABLE course (
+ id MEDIUMINT NOT NULL AUTO_INCREMENT,
+ subject VARCHAR(255),
+ PRIMARY KEY(id)
+);
+```
+
+```
+CREATE TABLE grade (
+  id MEDIUMINT NOT NULL AUTO_INCREMENT,
+  grade CHAR(30),
+  course_id MEDIUMINT,
+  student_id MEDIUMINT,
+  PRIMARY KEY (id),
+  FOREIGN KEY(student_id) REFERENCES student(id),
+  FOREIGN KEY(course_id) REFERENCES course(id)
+);
+```
+
+```
+INSERT INTO student(name) VALUES('Elevsson');
+
+INSERT INTO course(subject) VALUES('SQL');
+
+INSERT INTO grade(grade, course_id, student_id) VALUES('VG', 1, 1);
+```
+
+Säg att vi nu ska sluta använda oss av IG/G/VG och kör
+
+```
+DELETE FROM grade WHERE grade = 'VG';
+```
 
 #### Database Normalization
 
@@ -254,24 +346,22 @@ En table är i first normal form om den möter följande kriterier:
 
 En **repeterad grupp** (Repeating Groups) är ett attribut som har fler än ett värde i varje row av en table
 
-![1](./assets/1.png)
+<img src="./assets/1nf.png" alt="1" style="zoom:50%;" />
 
 
 
-Här ser vi ett tydligt exempel på repeating groups. Både *childs_name* och *childs_birth* kulumnerna har flera värden i sig. Det skapar två stora problem:
+Här ser vi ett tydligt exempel på repeating groups. Courses. Det skapar två stora problem:
 
-1. Vi kan inte veta med 100% säkerhet vilken födelsedag som innehas av ett barn. Vi skulle kunna utgå ifrån att det är i samma position som childs_name, men vad säger att den relativa positionen alltid kommer att förbli densamma?
-2. Att söka igenom table:n är väldigt svårt. Skulle vi söka efter anställda som har barn födda före 2005 behöver vi utföra komplicerade queries.
+1. Vi kan inte veta med 100% säkerhet vilket betyg korrespondar med vilken kurs. Vi skulle kunna utgå ifrån att det är i samma position som courses, men vad säger att den relativa positionen alltid kommer att förbli densamma?
+2. Att söka igenom table:n är väldigt svårt. Skulle vi söka efter betyg för kurser i JavaScript som gavs före 2005 behöver vi utföra komplicerade queries.
 
 Lösningen är simpel. Vi undviker helt enkelt repeterade grupper.
 
-Tillvägagångsättet är att skapa ytterligare en table där vi lagrad de anställdas barn. 
-
-![2](./assets/2.png)
+Tillvägagångsättet är att skapa ytterligare en table där vi lagrar betyg. 
 
 
 
-![3](./assets/3.png)
+<img src="./assets/1nfb.png" alt="3" style="zoom:50%;" />
 
 
 
@@ -280,6 +370,8 @@ Tillvägagångsättet är att skapa ytterligare en table där vi lagrad de anst�
 Vi har nu löst problemet med repeated groups, men det betyder inte att vi är färdiga med vår design, eller att ens first normal forms är fri från problem.
 
 Låt oss ta ett annat exempel för att enklare kunna visa och förstå problematiken.
+
+Säg att skolan behöver köpa in produkter och skapar en **orders table**
 
 ![4](./assets/4.png)
 
