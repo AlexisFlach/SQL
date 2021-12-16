@@ -23,11 +23,22 @@ En relation etablerar en förbindelse mellan ett par tables som är logiskt rela
 
 ```
 CREATE TABLE teacher (
-  id INT NOT NULL AUTO_INCREMENT,
+  teacher_id INT NOT NULL AUTO_INCREMENT,
   firstName VARCHAR(255),
   lastName VARCHAR(255),
   admin_username VARCHAR(255) UNIQUE,
-  PRIMARY KEY (id)
+  PRIMARY KEY (teacher_id)
+);
+```
+
+```
+CREATE TABLE teacher_contact (
+  contact_id INT NOT NULL AUTO_INCREMENT,
+  email VARCHAR(255),
+  phone VARCHAR(255),
+  teacherId INT UNIQUE,
+  PRIMARY KEY(contact_id),
+  FOREIGN KEY(teacherId) REFERENCES teacher(teacher_id)
 );
 ```
 
@@ -39,13 +50,9 @@ Bara genom att använda oss av **Unique** har vi skapat oss en one-to-one relati
 
 Lärarern kan endast ha ett admin_username, och det måste vara unikt.
 
+Vi har även en one-to-one där läraren har en referens till en table med kontaktinformation.
+
 ###### One-to-Many
-
-Vilken table är egentligen "One" och vilken är "Many"?
-
-Alltså; vilken är parent och vilken är child?
-
-En student kan endast gå på en skola, men en skola kan ha flera studenter.
 
 Säg att skolan har ett bibliotek, då kan biblioteket ha flera böcker, men en bok kan ju endast finnas på ett bibliotek.
 
@@ -53,7 +60,6 @@ Säg att skolan har ett bibliotek, då kan biblioteket ha flera böcker, men en 
 CREATE TABLE library (
   id INT NOT NULL AUTO_INCREMENT,
   name VARCHAR(255),
-  address VARCHAR(255),
   PRIMARY KEY(id)
 );
 ```
@@ -90,7 +96,7 @@ En student kan gå flera kurser, och en kurs kan ha flera studenter.
 ```
 CREATE TABLE course (
      course_id MEDIUMINT NOT NULL AUTO_INCREMENT,
-     subject VARCHAR(255) NOT NULL,
+     subject VARCHAR(255) NOT NULL UNIQUE,
      PRIMARY KEY (course_id)
 );
 ```
@@ -104,9 +110,7 @@ CREATE TABLE student (
      student_id MEDIUMINT NOT NULL AUTO_INCREMENT,
      firstName CHAR(30) NOT NULL,
      lastName CHAR(30) NOT NULL,
-     course_id MEDIUMINT,
      PRIMARY KEY (student_id),
-     FOREIGN KEY(course_id) REFERENCES course(course_id)
 );
 ```
 
@@ -117,8 +121,6 @@ CREATE TABLE student_course (
   PRIMARY KEY (student_id, course_id)
 );
 ```
-
-
 
 ###### Single-Valued Versus Multivalued Attributes
 
@@ -342,6 +344,8 @@ En table är i first normal form om den möter följande kriterier:
 
 - There are no repeating groups.
 
+Samtliga rows måste vara unika (inga dubletter), varje cell måste endast innehålla ett enskilt värd
+
 ###### Repeating Groups
 
 En **repeterad grupp** (Repeating Groups) är ett attribut som har fler än ett värde i varje row av en table
@@ -394,7 +398,7 @@ Att ha fler än en **entity** i samma table är en dålig sak!
 
 #### Second Normal Form (2NF)
 
-Även om vi har lyckats ta oss ifrån 1NF och åtminstone undviktit repeterade grupper, så är vi, previs som vi gick igenom med våra insert och deletion- anomalies, långt ifrån färdiga med vår design.
+Även om vi har lyckats ta oss ifrån 1NF och åtminstone undvikit repeterade grupper, så är vi, previs som vi gick igenom med våra insert och deletion- anomalies, långt ifrån färdiga med vår design.
 
 Lösningen är att bryta ned relationen så vi tillslut har en relation för varje enity. 
 

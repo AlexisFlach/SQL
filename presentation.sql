@@ -19,26 +19,52 @@ CREATE TABLE student (
 
 INSERT INTO student(firstName, lastName, age) VALUES('Elev', 'Elevsson', 29);
 
+
 /* ONE-TO-ONE */
 
 CREATE TABLE teacher (
-  id INT NOT NULL AUTO_INCREMENT,
+  teacher_id INT NOT NULL AUTO_INCREMENT,
   firstName VARCHAR(255),
   lastName VARCHAR(255),
   admin_username VARCHAR(255) UNIQUE,
-  PRIMARY KEY (id)
+  PRIMARY KEY (teacher_id)
+);
+
+CREATE TABLE teacher_contact (
+  contact_id INT NOT NULL AUTO_INCREMENT,
+  email VARCHAR(255),
+  phone VARCHAR(255),
+  teacherId INT UNIQUE,
+  PRIMARY KEY(contact_id),
+  FOREIGN KEY(teacherId) REFERENCES teacher(teacher_id)
 );
 
 INSERT INTO teacher(firstName, lastName, admin_username) VALUES('Lärar', 'Lärarsson', 'lärare123');
-INSERT INTO teacher(firstName, lastName, admin_username) VALUES('Lärar2', 'Lärarsson2', 'lärare123');
+INSERT INTO teacher(firstName, lastName, admin_username) VALUES('Lärar2', 'Lärarsson2', 'lärare12');
+
+INSERT INTO teacher_contact(email, phone, teacherId) VALUES('Lärar@skola.se', '0707-28828', 1);
+INSERT INTO teacher_contact(email, phone, teacherId) VALUES('Lärar@skola.se', '0707-28829', 1);
+
 SELECT * FROM teacher;
+SELECT * FROM teacher_contact;
+
+SELECT teacher_contact.phone
+FROM teacher_contact
+JOIN teacher
+ON teacher.teacher_id  = teacher_contact.contact_id;
+
+SELECT
+  teacher.firstName AS teacher_name,
+  teacher_contact.phone AS teacher_phone
+FROM teacher
+JOIN teacher_contact ON teacher.teacher_id=teacher_contact.teacherId;
+
 
 /* ONE-TO-MANY */
 
 CREATE TABLE library (
   id INT NOT NULL AUTO_INCREMENT,
   name VARCHAR(255),
-  address VARCHAR(255),
   PRIMARY KEY(id)
 );
 
@@ -50,7 +76,7 @@ CREATE TABLE book (
   FOREIGN KEY(library_id) REFERENCES library(id)
 );
 
-INSERT INTO library(name, address) VALUES('Humanisten', 'Göteborg nånstans');
+INSERT INTO library(name) VALUES('Humanisten');
 INSERT INTO book(library_id, title) VALUES (1, 'mysql bascis');
 INSERT INTO book(library_id, title) VALUES (1, 'postgres basics');
 
@@ -63,7 +89,7 @@ ON library.id = book.library_id;
 
 CREATE TABLE course (
      course_id MEDIUMINT NOT NULL AUTO_INCREMENT,
-     subject VARCHAR(255) NOT NULL,
+     subject VARCHAR(255) NOT NULL UNIQUE,
      PRIMARY KEY (course_id)
 );
 
@@ -79,10 +105,10 @@ CREATE TABLE student (
      student_id MEDIUMINT NOT NULL AUTO_INCREMENT,
      firstName CHAR(30) NOT NULL,
      lastName CHAR(30) NOT NULL,
-     course_id MEDIUMINT,
-     PRIMARY KEY (student_id),
-     FOREIGN KEY(course_id) REFERENCES course(course_id)
+     PRIMARY KEY (student_id)
 );
+
+INSERT INTO student(firstName, lastName) VALUES('Student', 'Studentsson');
 
 INSERT INTO student_course(student_id, course_id) VALUES(1, 1);
 
